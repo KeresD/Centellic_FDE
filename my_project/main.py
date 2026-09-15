@@ -13,15 +13,3 @@ def complete_task(tasks, index):
         return False
     tasks[index]["done"] = True
     return True
-
-# make two functions 1. to remove a task -> committed, 2. list all tasks -> committed
-def remove_task(tasks, index):
-    """Remove a task by its position in the list, return False if index is invalid"""
-    if index < 0 or index >= len(tasks):
-        return False
-    tasks.pop(index)
-    return True
-
-def list_tasks(tasks):
-    """Return all tasks in the list"""
-    return tasks
