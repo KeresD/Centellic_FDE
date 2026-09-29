@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./Week 1/Day 3/starter 3/src"
+    ],
+    "git.ignoreLimitWarning": true
+}
