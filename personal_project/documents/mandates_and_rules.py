@@ -1,0 +1,38 @@
+from typing import Any
+
+MANDATES: list[dict[str, Any]] = [
+    {'mandate_id': 1, 'name': 'Haven Cancer Support Responsible Growth Mandate', 'client_name': 'Haven Cancer Support Trust', 'effective_date': '2026-07-01', 'review_date': '2027-07-01', 'version': '1.0', 'document_id': 13, 'status': 'active', 'synthetic': True},
+    {'mandate_id': 2, 'name': 'Willow Community Responsible Investment Mandate', 'client_name': 'Willow Community Foundation', 'effective_date': '2026-07-01', 'review_date': '2027-07-01', 'version': '1.0', 'document_id': 14, 'status': 'active', 'synthetic': True},
+    {'mandate_id': 3, 'name': 'Hartwell Growth and Concentration Mandate', 'client_name': 'Sofia Hartwell', 'effective_date': '2026-07-01', 'review_date': '2027-07-01', 'version': '1.0', 'document_id': 15, 'status': 'active', 'synthetic': True},
+    {'mandate_id': 4, 'name': 'Marlow Retirement Allocation Mandate', 'client_name': 'Evan Marlow', 'effective_date': '2026-07-01', 'review_date': '2027-07-01', 'version': '1.0', 'document_id': 16, 'status': 'active', 'synthetic': True},
+    {'mandate_id': 5, 'name': 'Ashcombe Research and Evidence Mandate', 'client_name': 'Ashcombe Research Endowment', 'effective_date': '2026-07-01', 'review_date': '2027-07-01', 'version': '1.0', 'document_id': 17, 'status': 'active', 'synthetic': True},
+]
+
+MANDATE_RULES: list[dict[str, Any]] = [
+    {'rule_id': 1, 'mandate_id': 1, 'rule_type': 'activity_exclusion', 'target': 'tobacco', 'operator': '=', 'limit': 0, 'unit': 'percent', 'scope': 'portfolio', 'source_document_id': 13, 'source_section': '3.1', 'synthetic': True},
+    {'rule_id': 2, 'mandate_id': 1, 'rule_type': 'activity_exclusion', 'target': 'weapons', 'operator': '=', 'limit': 0, 'unit': 'percent', 'scope': 'portfolio', 'source_document_id': 13, 'source_section': '3.2', 'synthetic': True},
+    {'rule_id': 3, 'mandate_id': 1, 'rule_type': 'company_exposure', 'target': 'LumenArc Systems', 'operator': '<=', 'limit': 5, 'unit': 'percent', 'scope': 'portfolio', 'source_document_id': 13, 'source_section': '3.3', 'synthetic': True, 'target_issuer_id': 1},
+    {'rule_id': 4, 'mandate_id': 1, 'rule_type': 'sector_exposure', 'target': 'Technology', 'operator': '<=', 'limit': 25, 'unit': 'percent', 'scope': 'portfolio', 'source_document_id': 13, 'source_section': '3.4', 'synthetic': True},
+    {'rule_id': 5, 'mandate_id': 1, 'rule_type': 'minimum_esg_score', 'target': 'FUND', 'operator': '>=', 'limit': 70, 'unit': 'score_0_100', 'scope': 'each_fund', 'source_document_id': 13, 'source_section': '3.5', 'synthetic': True},
+    {'rule_id': 6, 'mandate_id': 1, 'rule_type': 'maximum_risk_rating', 'target': 'FUND', 'operator': '<=', 'limit': 5, 'unit': 'rating_1_7', 'scope': 'each_fund', 'source_document_id': 13, 'source_section': '3.6', 'synthetic': True},
+    {'rule_id': 7, 'mandate_id': 2, 'rule_type': 'activity_exclusion', 'target': 'tobacco', 'operator': '=', 'limit': 0, 'unit': 'percent', 'scope': 'portfolio', 'source_document_id': 14, 'source_section': '3.1', 'synthetic': True},
+    {'rule_id': 8, 'mandate_id': 2, 'rule_type': 'activity_exclusion', 'target': 'weapons', 'operator': '=', 'limit': 0, 'unit': 'percent', 'scope': 'portfolio', 'source_document_id': 14, 'source_section': '3.2', 'synthetic': True},
+    {'rule_id': 9, 'mandate_id': 2, 'rule_type': 'company_exposure', 'target': 'LumenArc Systems', 'operator': '<=', 'limit': 5, 'unit': 'percent', 'scope': 'portfolio', 'source_document_id': 14, 'source_section': '3.3', 'synthetic': True, 'target_issuer_id': 1},
+    {'rule_id': 10, 'mandate_id': 2, 'rule_type': 'sector_exposure', 'target': 'Technology', 'operator': '<=', 'limit': 25, 'unit': 'percent', 'scope': 'portfolio', 'source_document_id': 14, 'source_section': '3.4', 'synthetic': True},
+    {'rule_id': 11, 'mandate_id': 2, 'rule_type': 'minimum_esg_score', 'target': 'FUND', 'operator': '>=', 'limit': 70, 'unit': 'score_0_100', 'scope': 'each_fund', 'source_document_id': 14, 'source_section': '3.5', 'synthetic': True},
+    {'rule_id': 12, 'mandate_id': 2, 'rule_type': 'maximum_risk_rating', 'target': 'FUND', 'operator': '<=', 'limit': 5, 'unit': 'rating_1_7', 'scope': 'each_fund', 'source_document_id': 14, 'source_section': '3.6', 'synthetic': True},
+    {'rule_id': 13, 'mandate_id': 3, 'rule_type': 'company_exposure', 'target': 'LumenArc Systems', 'operator': '<=', 'limit': 6, 'unit': 'percent', 'scope': 'portfolio', 'source_document_id': 15, 'source_section': '3.1', 'synthetic': True, 'target_issuer_id': 1},
+    {'rule_id': 14, 'mandate_id': 3, 'rule_type': 'sector_exposure', 'target': 'Technology', 'operator': '<=', 'limit': 40, 'unit': 'percent', 'scope': 'portfolio', 'source_document_id': 15, 'source_section': '3.2', 'synthetic': True},
+    {'rule_id': 15, 'mandate_id': 3, 'rule_type': 'maximum_risk_rating', 'target': 'FUND', 'operator': '<=', 'limit': 6, 'unit': 'rating_1_7', 'scope': 'each_fund', 'source_document_id': 15, 'source_section': '3.3', 'synthetic': True},
+    {'rule_id': 16, 'mandate_id': 3, 'rule_type': 'maximum_fund_weight', 'target': 'FUND', 'operator': '<=', 'limit': 65, 'unit': 'percent', 'scope': 'each_fund', 'source_document_id': 15, 'source_section': '3.4', 'synthetic': True},
+    {'rule_id': 17, 'mandate_id': 4, 'rule_type': 'activity_exposure', 'target': 'tobacco', 'operator': '<=', 'limit': 2, 'unit': 'percent', 'scope': 'portfolio', 'source_document_id': 16, 'source_section': '3.1', 'synthetic': True},
+    {'rule_id': 18, 'mandate_id': 4, 'rule_type': 'activity_exposure', 'target': 'weapons', 'operator': '<=', 'limit': 2, 'unit': 'percent', 'scope': 'portfolio', 'source_document_id': 16, 'source_section': '3.2', 'synthetic': True},
+    {'rule_id': 19, 'mandate_id': 4, 'rule_type': 'sector_exposure', 'target': 'Technology', 'operator': '<=', 'limit': 20, 'unit': 'percent', 'scope': 'portfolio', 'source_document_id': 16, 'source_section': '3.3', 'synthetic': True},
+    {'rule_id': 20, 'mandate_id': 4, 'rule_type': 'minimum_esg_score', 'target': 'FUND', 'operator': '>=', 'limit': 60, 'unit': 'score_0_100', 'scope': 'each_fund', 'source_document_id': 16, 'source_section': '3.4', 'synthetic': True},
+    {'rule_id': 21, 'mandate_id': 4, 'rule_type': 'maximum_risk_rating', 'target': 'FUND', 'operator': '<=', 'limit': 4, 'unit': 'rating_1_7', 'scope': 'each_fund', 'source_document_id': 16, 'source_section': '3.5', 'synthetic': True},
+    {'rule_id': 22, 'mandate_id': 4, 'rule_type': 'asset_class_exposure', 'target': 'fixed_income', 'operator': '>=', 'limit': 50, 'unit': 'percent', 'scope': 'portfolio', 'source_document_id': 16, 'source_section': '3.6', 'synthetic': True},
+    {'rule_id': 23, 'mandate_id': 5, 'rule_type': 'minimum_esg_score', 'target': 'FUND', 'operator': '>=', 'limit': 65, 'unit': 'score_0_100', 'scope': 'each_fund', 'source_document_id': 17, 'source_section': '3.1', 'synthetic': True},
+    {'rule_id': 24, 'mandate_id': 5, 'rule_type': 'maximum_risk_rating', 'target': 'FUND', 'operator': '<=', 'limit': 6, 'unit': 'rating_1_7', 'scope': 'each_fund', 'source_document_id': 17, 'source_section': '3.2', 'synthetic': True},
+    {'rule_id': 25, 'mandate_id': 5, 'rule_type': 'maximum_fund_weight', 'target': 'FUND', 'operator': '<=', 'limit': 50, 'unit': 'percent', 'scope': 'each_fund', 'source_document_id': 17, 'source_section': '3.3', 'synthetic': True},
+    {'rule_id': 26, 'mandate_id': 5, 'rule_type': 'company_exposure', 'target': 'LumenArc Systems', 'operator': '<=', 'limit': 5, 'unit': 'percent', 'scope': 'portfolio', 'source_document_id': 17, 'source_section': '3.4', 'synthetic': True, 'target_issuer_id': 1},
+]
