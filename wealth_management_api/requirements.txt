@@ -1,0 +1,12 @@
+# Install in venv
+
+fastapi
+uvicorn[standard]
+pydantic
+anthropic
+voyageai
+chromadb
+httpx
+pytest
+mypy
+ruff
