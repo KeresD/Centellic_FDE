@@ -410,3 +410,84 @@ If not document = relevant enough then the system will refuse to answer and wnt 
     - misspelled names
     - matches below threshold
     - ambiguous matching - e.g., more than one pair match --> should allow users to decide instead of guessing if same.
+
+For Day 2, the roles would be:
+main.py
+- FastAPI app
+- health endpoint
+- CRUD endpoints
+- filters
+- summary endpoints
+
+models.py
+- Pydantic models
+- Fund
+- ClientMandate
+- structured LLM output model
+
+data.py
+- synthetic fund records
+- synthetic mandate records
+
+llm.py
+- Anthropic client
+- prompts
+- summary function
+- streaming summary
+
+Things a portfolio manager would need to see if mandate fits a client's:
+
+risk - risk rating
+asset type - asset class
+fees - ongoing charges %
+esg status/esg score - esg score status, esg score
+restricted sectors - holding sector
+management approach - management style
+
+so from potentially holdings - fund_id, sector, min esg score
+
+other features in funds and holdings:
+max_risk_rating
+underperformed_benchmark
+asset_class
+max_ongoing_charges_pct
+
+Anthropic_api_key:
+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
+
+voyage_api_key: pa-pfcsSO6X58Svc_tOMUE5bhdo_BjK_-c9ldjj2tarPuV
+
+#### Endpoints:
+
+Core:
+- `GET /portfolios` and `GET /portfolios/{id}`. The list endpoint is needed for UI dropdowns.
+- `GET /funds and GET /funds/{id}`. Add risk rating, costs and performance into this one rather than separate /risk and /performance endpoints.
+- `GET /mandates/{id}/rules`
+- `GET /portfolios/{id}/compliance?status=` = main feature.
+
+Look through exposure:
+- `GET /portfolios/{id}/exposures?by=issuer|sector|activity|asset_class|currency` returns the aggregated look-through with a coverage_pct field
+
+Compliance for portfolio manager:
+- `GET /portfolios/{id}/compliance` returns, per rule: `status` (pass / breach / indeterminate), `actual, limit, headroom, contributors[]` (which fund and holding drive it), data_gaps[] and `source_section`
+- `POST /portfolios/{id}/compliance/what-if` takes proposed fund weights or a new fund and returns pre-trade compliance (the "does this holding fit" question itself)
+
+For adviser so that they can explain:
+- `GET /funds/{id}/performance` returns returns vs benchmark, relative performance, costs and return basis
+- `GET /funds/{id}/risk` returns the risk rating, concentration, sector mix, currency exposure, and duration/yield for bonds
+- `GET /portfolios/{id}/summary` returns weighted returns, the £ impact, costs in £, and a compliance summary, ready for an LLM or template to turn into plain English
+
+
+End point filterings:
+- To filter by date 
+    - `GET /portfolios/1/compliance?as_of_date=2026-09-30`
+
+- To filter by status and rule type on compliance
+    - `GET /portfolios/1/compliance?status=breach,indeterminate`
+    - `GET /portfolios/1/compliance?rule_type=activity_exclusion`
+
+- Cut down the look through exposures by filtering it even more
+    - `GET /portfolios/1/exposures?by=issuer&top_n=10`
+    - `GET /portfolios/1/exposures?by=sector&min_weight=1`
+    - `GET /portfolios/1/exposures?by=activity&tag=tobacco`
+
