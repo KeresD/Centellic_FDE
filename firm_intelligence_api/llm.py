@@ -2,12 +2,9 @@
 
 import os
 
-import anthropic
-
 # from anthropic import APIStatusErrror, APITimeoutError, RateLimitErrror
-
-from anthropic.types import TextBlock
-
+import anthropic
+from anthropic.types import ParsedTextBlock, TextBlock
 from pydantic import BaseModel, Field
 
 MODEL = "claude-haiku-4-5-20251001"
@@ -48,7 +45,7 @@ def summarise_firm(firm: dict) -> dict:
     response = client.messages.create(
         model=MODEL,
         max_tokens=400,
-        system=SYSTEM_PROMPT,
+        system=GROUNDED_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": build_prompt(firm)}],
     )
     block = response.content[0]
@@ -92,8 +89,7 @@ def stream_firm_summary(firm: dict):
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": build_prompt(firm)}],
     ) as stream:
-        for text in stream.text_stream:
-            yield text
+        yield from stream.text_stream
 
 # how to verify a function - define class and use pydantic tests - ruff, pytest, mypy
 
@@ -111,13 +107,16 @@ class FirmAnalysis(BaseModel):
 def analyse_firm(firm: dict) -> dict:
     """Structured output. Response = validated against FirmAnalysis or it fails."""
     response = client.messages.parse(
-    model = MODEL,
-    max_tokens = 600,
-    system = SYSTEM_PROMPT,
-    messages = [{"role": "user", "content": build_prompt(firm)}],
-    output_format = FirmAnalysis,
+        model=MODEL,
+        max_tokens=600,
+        system=SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": build_prompt(firm)}],
+        output_format=FirmAnalysis,
     )
-    analysis = response.content[0].parsed_output
+    block = response.content[0]
+    assert isinstance(block, ParsedTextBlock)
+    analysis = block.parsed_output
+    assert analysis is not None
     
     return {
         # id
@@ -149,19 +148,21 @@ GROUNDED_SYSTEM_PROMPT = (
 # rules in the system
 # data in user
 
-def answer_from_context(question: str, context: str) -> dict:
+def answer_from_context(question: str, context: str, system: str = GROUNDED_SYSTEM_PROMPT) -> dict:
     '''Answer strictly from retrieved context - the G in RAG'''
     response = client.messages.create(
         model=MODEL,
         max_tokens=500,
-        system=GROUNDED_SYSTEM_PROMPT,
+        system=system,
         messages=[{
             "role": "user",
             "content": f"Context: \n\n{context}\n\nQuestion: {question}",
         }]
     )
+    block = response.content[0]
+    assert isinstance(block, TextBlock)
     return {
-        "answer": response.content[0].text,
+        "answer": block.text,
         # input and output tokens
         "input_tokens": response.usage.input_tokens,
         "output_tokens": response.usage.output_tokens,

@@ -1,14 +1,12 @@
 """Shared by every router: lookups, idempotency and the PATCH helper.
 Lives in routers/ (not helpers) because it raises HTTPException."""
 
-from data_doc.funds import FUNDS
-from data_doc.mandates_and_rules import MANDATES
-from data_doc.portfolio_and_funds import PORTFOLIOS
+from data_doc.data import FUNDS, PORTFOLIOS
 from fastapi import Header, HTTPException
 from helpers_and_compliance.helpers import find_one
 from pydantic import BaseModel, ValidationError
 
-# ---------- lookups ----------
+# Lookups
 
 def get_or_404(records: list[dict], key: str, value: int, label: str) -> dict:
     record = find_one(records, key, value)
@@ -25,10 +23,6 @@ def get_portfolio_or_404(portfolio_id: int) -> dict:
     return get_or_404(PORTFOLIOS, "portfolio_id", portfolio_id, "portfolio")
 
 
-def get_mandate_or_404(mandate_id: int) -> dict:
-    return get_or_404(MANDATES, "mandate_id", mandate_id, "mandate")
-
-
 def must_exist(records: list[dict], key: str, value: int, label: str) -> None:
     """For ids inside a request body: a missing one makes the request invalid (422), not 404."""
     if find_one(records, key, value) is None:
@@ -43,7 +37,7 @@ def ensure_unique_fund_name(name: str, exclude_fund_id: int | None = None) -> No
             raise HTTPException(status_code=409, detail=f"A fund named '{name}' already exists")
 
 
-# ---------- idempotency for POST ----------
+# Idempotency for POST
 
 IdempotencyKey = Header(alias="Idempotency-Key", min_length=1)
 
@@ -67,7 +61,7 @@ def remember(scope: str, key: str, body: BaseModel, response: dict) -> None:
                                       "response": dict(response)}
 
 
-# ---------- PATCH ----------
+# PATCH
 
 def patch_record(record: dict, changes: BaseModel, full_model: type[BaseModel]) -> dict:
     """Apply a partial update, then re-validate the WHOLE record against the full model,

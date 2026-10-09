@@ -1,16 +1,14 @@
 """HTTP layer for the tool-use agent - all FastAPI concerns live here, not in agent.py"""
 
+import agent
 from anthropic import (
     APIConnectionError,
     APIStatusError,
     APITimeoutError,
-    RateLimitError
-    )
-
+    RateLimitError,
+)
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
-
-import agent
 
 router = APIRouter(prefix="/agent", tags=["agent"])
 

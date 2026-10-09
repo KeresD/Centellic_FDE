@@ -1,7 +1,7 @@
+import insights
 from fastapi import FastAPI
 
-from routers import firms, people, reports, knowledge, ask
-import insights
+from firm_intelligence_api.routers import ask, firms, knowledge, people, reports
 
 app = FastAPI(title="Firm Intelligence API")
 app.include_router(firms.router)

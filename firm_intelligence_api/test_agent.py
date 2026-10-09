@@ -5,9 +5,8 @@
 # 5. check it stopped
 # pretend the model never stops - check if code stops it anyway
 
-from fastapi.testclient import TestClient
-
 import agent
+from fastapi.testclient import TestClient
 from main import app
 
 client = TestClient(app)
@@ -47,7 +46,7 @@ def test_agent_stops_at_max_iterations_instead_of_looping_forever(monkeypatch):
     # 3. swap in the fakes
     monkeypatch.setattr(agent.client.messages, "create", fake_create)
     monkeypatch.setattr(
-        agent.knowledge,
+        agent.knowledge, # type: ignore
         "search",
         lambda query, top_k=3: [{"id": "doc-001", "title": "t", "text": "x", "score": 0.5}],
     )
@@ -62,4 +61,5 @@ def test_agent_stops_at_max_iterations_instead_of_looping_forever(monkeypatch):
     assert body["stop_reason"] == "max_iterations"
     
     # assert - tool_Calls_made
-    assert body["total_calls_made"] == agent.MAX_ITERATIONS
+    assert body["total_calls_made"] == agent.MAX_ITERATIONS # type: ignore
+    

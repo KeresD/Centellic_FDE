@@ -2,6 +2,7 @@
 
 import math
 import os
+
 import voyageai
 from documents import DOCUMENTS
 
@@ -22,7 +23,7 @@ def embed_texts(texts: list[str], input_type: str) -> tuple[list[list[float]], i
     result = voyage.embed(texts=texts, model=EMBED_MODEL, input_type=input_type)
     
     # returns the cectors and token_count (can see cost)
-    return result.embeddings, result.total_tokens
+    return result.embeddings, result.total_tokens # type: ignore
 
 def cosine_similarity(a: list[float], b: list[float]) -> float:
     """How close are 2 vectors in direction, ignoring their length.

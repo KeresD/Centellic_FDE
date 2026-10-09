@@ -28,10 +28,10 @@ client = anthropic.Anthropic(
 )
 
 
-# ---------- small helpers ----------
+# Small helpers
 
-def _messages(fund: dict, task: str, include_history: bool = False) -> list[MessageParam]:
-    return [{"role": "user", "content": build_fund_prompt(fund, task, include_history)}]
+def _messages(fund: dict, task: str) -> list[MessageParam]:
+    return [{"role": "user", "content": build_fund_prompt(fund, task)}]
 
 
 def _text(response: Message) -> str:
@@ -41,7 +41,7 @@ def _text(response: Message) -> str:
 
 
 def _usage(response: Message) -> dict:
-    """Every generated answer reports what it cost (brief §2)."""
+    """Every generated answer reports what it cost (brief section 2)."""
     return {
         "input_tokens": response.usage.input_tokens,
         "output_tokens": response.usage.output_tokens,
@@ -49,7 +49,7 @@ def _usage(response: Message) -> dict:
     }
 
 
-# ---------- the calls ----------
+# The calls
 
 def summarise_fund(fund: dict) -> dict:
     """Plain-language client update, for an adviser to review."""
@@ -90,7 +90,7 @@ def analyse_fund(fund: dict) -> dict:
         model=MODEL,
         max_tokens=800,
         system=ANALYSIS_SYSTEM_PROMPT,
-        messages=_messages(fund, ANALYSIS_TASK, include_history=True),
+        messages=_messages(fund, ANALYSIS_TASK),
         output_format=FundAssessment,
     )
     assessment = response.parsed_output

@@ -1,11 +1,10 @@
 from fastapi import FastAPI
-from routers import ai, funds, mandates, portfolios
+from routers import ai, funds, portfolios
 
 app = FastAPI(title="Wealth Management API")
 
 app.include_router(funds.router)
 app.include_router(portfolios.router)
-app.include_router(mandates.router)
 app.include_router(ai.router)
 
 

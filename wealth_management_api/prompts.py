@@ -5,22 +5,22 @@ from typing import Any
 
 from helpers_and_compliance.performance import fund_performance_facts
 
-# ---------- system prompts ----------
+# System prompts
 
 ADVISER_SYSTEM_PROMPT = (
     "You write fund updates that a financial adviser will review and pass to a client. "
     "Use plain British English a non-specialist can follow, and explain terms such as "
     "benchmark or percentage point the first time you use them. "
     "Use only the figures provided. Never invent figures. "
-    # doc 6 evidence policy; doc 13 §4.2
+    # doc 6 evidence policy; doc 13 - 4.2
     "Explain performance only through the holding contributions and cost drag provided. "
     "Do not suggest economic, market or currency causes, because none are in the evidence. "
     "Holding contributions are absolute, so do not present them as the reason the fund "
     "beat or trailed its benchmark. "
-    # doc 12 §4.2
+    # doc 12 - 4.2
     "If the ESG score is pending review, say it has not yet been approved and never estimate it. "
     "If the holdings data is marked stale, say the figures may be out of date. "
-    # doc 13 §4.1, §5, §4.3
+    # doc 13 - 4.1, 5, 4.3
     "Returns are after fund costs but before adviser and platform fees. "
     "Do not recommend buying, selling or holding. "
     "End with: Past performance is not a reliable indicator of future results. "
@@ -32,7 +32,7 @@ ANALYSIS_SYSTEM_PROMPT = (
     "Use only the figures provided. Never invent numbers, holdings or causes. "
     "Do not suggest economic, market or currency causes, because none are in the evidence. "
     "Put anything the data cannot support in evidence_gaps, for example an ESG score pending "
-    "review, holdings coverage below 100%, stale holdings, or losses within a quarter, which "
+    "review, stale holdings, or losses within a quarter, which "
     "quarterly figures cannot show. "
     "Do not assess suitability for any client and do not make recommendations. "
     "Use British English. No em dash characters."
@@ -52,19 +52,19 @@ GROUNDED_SYSTEM_PROMPT = (
     "Use British English. No em dash characters."
 )
 
-# ---------- tasks ----------
+# Tasks
 
 SUMMARY_TASK = "Write a two paragraph client update on this fund's performance and risk last quarter."
 ANALYSIS_TASK = "Assess this fund for a portfolio manager."
 
 
-# ---------- user message ----------
+# User message
 
 def _show(value: Any, suffix: str = "") -> str:
     return "not available" if value is None else f"{value}{suffix}"
 
 
-def build_fund_prompt(fund: dict, task: str, include_history: bool = False) -> str:
+def build_fund_prompt(fund: dict, task: str) -> str:
     facts = fund_performance_facts(fund)
     esg = (f"{fund['esg_score']}/100, approved" if fund["esg_score_status"] == "approved"
            else "pending review, no approved score")
@@ -81,8 +81,6 @@ def build_fund_prompt(fund: dict, task: str, include_history: bool = False) -> s
         f"Estimated transaction costs: {fund['estimated_transaction_costs_pct']}% a year",
         f"Currency hedging: {fund['currency_hedging']}",
         f"Holdings as of: {_show(facts['holdings_as_of'])} ({freshness})",
-        f"Holdings coverage: {_show(fund.get('holdings_coverage_pct'), '%')} of NAV",
-        f"Return basis: {_show(fund.get('return_basis'))}",
         "",
         f"Period: {facts['period']}",
         f"Fund return after fund costs: {_show(facts['fund_return_pct'], '%')}",
@@ -95,8 +93,4 @@ def build_fund_prompt(fund: dict, task: str, include_history: bool = False) -> s
         *[f"- {c['company']}: {c['contribution_pp']:+.3f}" for c in facts["contributions"]],
         f"Total of contributions: {facts['contributions_total_pp']:+.3f}",
     ]
-    if include_history:
-        lines += ["", "Quarterly history (fund % / benchmark %):",
-                  *[f"- {h['period_end']}: {h['fund_pct']} / {h['benchmark_pct']}"
-                    for h in facts["quarterly_history"]]]
     return "\n".join(lines)

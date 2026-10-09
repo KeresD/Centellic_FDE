@@ -1,6 +1,13 @@
 {
     "python.analysis.extraPaths": [
-        "./Week 1/Day 3/starter 3/src"
+        "./Week 1/Day 3/starter 3/src",
+        "./wealth_management_api"
     ],
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "python-envs.pythonProjects": [],
+    "python-envs.defaultEnvManager": "ms-python.python:system",
+    "python-envs.defaultPackageManager": "ms-python.python:pip", 
+    "terminal.integrated.fontFamily": "'Maple Mono NF'",
+    "terminal.integrated.fontSize": 12,
+    "terminal.integrated.fontLigatures.enabled": true,
 }

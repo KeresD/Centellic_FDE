@@ -1,10 +1,8 @@
-"""Fund records: CRUD, holdings and quarterly returns."""
+"""Fund records: CRUD with TWO filters and holdings = in each fund."""
 
-from data_doc.funds import BENCHMARK_CONSTITUENTS, FUND_QUARTERLY_RETURNS, FUNDS
-from data_doc.holdings import HOLDINGS
-from data_doc.portfolio_and_funds import PORTFOLIO_FUNDS
+from data_doc.data import FUNDS, PORTFOLIOS
 from fastapi import APIRouter, HTTPException, Query
-from helpers_and_compliance.helpers import find_one, next_id, remove_where
+from helpers_and_compliance.helpers import next_id
 from models import AssetClass, FundCreate, FundPatch
 
 from routers.common import (
@@ -35,19 +33,6 @@ def get_fund(fund_id: int):
     return get_fund_or_404(fund_id)
 
 
-@router.get("/{fund_id}/holdings")
-def get_fund_holdings(fund_id: int):
-    get_fund_or_404(fund_id)
-    return [h for h in HOLDINGS if h["fund_id"] == fund_id]
-
-
-@router.get("/{fund_id}/returns")
-def get_fund_returns(fund_id: int):
-    get_fund_or_404(fund_id)
-    return sorted((r for r in FUND_QUARTERLY_RETURNS if r["fund_id"] == fund_id),
-                  key=lambda r: r["period_start"])
-
-
 @router.post("", status_code=201)
 def create_fund(new: FundCreate, idempotency_key: str = IdempotencyKey):
     # replay first: a retried create must return the original, not a 409 for its own name
@@ -55,7 +40,7 @@ def create_fund(new: FundCreate, idempotency_key: str = IdempotencyKey):
     if earlier is not None:
         return earlier
     ensure_unique_fund_name(new.name)
-    fund = {"fund_id": next_id(FUNDS, "fund_id"), **new.model_dump(mode="json")}
+    fund = {"fund_id": next_id(FUNDS, "fund_id"), **new.model_dump(mode="json"), "holdings": []}
     FUNDS.append(fund)
     remember("funds", idempotency_key, new, fund)
     return fund
@@ -72,9 +57,7 @@ def update_fund(fund_id: int, changes: FundPatch):
 @router.delete("/{fund_id}", status_code=204)
 def delete_fund(fund_id: int):
     fund = get_fund_or_404(fund_id)
-    if find_one(PORTFOLIO_FUNDS, "fund_id", fund_id) is not None:
-        raise HTTPException(status_code=409, detail="Fund is still held in a client portfolio")
+    if any (a["fund_id"] == fund_id for p in PORTFOLIOS for a in p["allocations"]):
+        raise HTTPException(status_code=409, detail="Fund is still held in a client portfolio.")
+    # since holdings live inside, they get deleted too
     FUNDS.remove(fund)
-    # remove everything keyed by this fund_id so a future fund can't inherit it
-    for table in (HOLDINGS, FUND_QUARTERLY_RETURNS, BENCHMARK_CONSTITUENTS):
-        remove_where(table, "fund_id", fund_id)

@@ -1,6 +1,7 @@
 """The tool-use loop - nothing in here knows about FastAPI"""
 
 from typing import Any
+
 import knowledge_store as knowledge
 from llm import MODEL, client
 

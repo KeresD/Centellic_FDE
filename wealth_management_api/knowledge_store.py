@@ -6,7 +6,7 @@ from typing import Any, cast
 
 import chromadb
 import config
-from chromadb.api.types import PyEmbeddings, Where
+from chromadb.api.types import PyEmbeddings
 from data_doc.documents import DOCUMENTS
 from voyageai.client import Client  # type: ignore[import-untyped]
 
@@ -21,7 +21,7 @@ collection = chroma.get_or_create_collection(
 )
 
 
-# ---------- embedding ----------
+# Embedding
 
 def embed_texts(texts: list[str], input_type: str) -> tuple[PyEmbeddings, int]:
     """input_type tells Voyage whether these are documents being stored or a query being asked."""
@@ -31,15 +31,11 @@ def embed_texts(texts: list[str], input_type: str) -> tuple[PyEmbeddings, int]:
     return cast(PyEmbeddings, result.embeddings), result.total_tokens
 
 
-# ---------- indexing ----------
-
-def _doc_id(doc: dict) -> str:
-    return f"doc-{doc['document_id']:03d}"     # 7 becomes "doc-007", which Claude cites
-
+# Indexing
 
 def _metadata(doc: dict) -> dict[str, Any]:
     # Chroma metadata values must be str, int, float or bool, so None keys are left out
-    meta: dict[str, Any] = {"title": doc["title"], "document_type": doc["document_type"],
+    meta: dict[str, Any] = {"title": doc["title"], "type": doc["type"],
                             "date": doc["date"]}
     for key in ("fund_id", "mandate_id"):
         if doc.get(key) is not None:
@@ -53,8 +49,8 @@ def count() -> int:
 
 def build_index() -> dict:
     """Embed every document, upsert by id, and remove vectors for documents that no longer exist."""
-    ids = [_doc_id(doc) for doc in DOCUMENTS]
-    texts = [doc["content"] for doc in DOCUMENTS]
+    ids = [doc["id"] for doc in DOCUMENTS]
+    texts = [doc["body"] for doc in DOCUMENTS]
     vectors, tokens = embed_texts(texts, input_type="document")
 
     # upsert: safe to re-run; existing ids are overwritten, new ones are added
@@ -75,16 +71,15 @@ def build_index() -> dict:
             "embedding_tokens": tokens, "embed_model": config.EMBED_MODEL}
 
 
-# ---------- searching ----------
+# Searching
 
-def search(question: str, top_k: int = config.SEARCH_TOP_K, where: Where | None = None) -> list[dict]:
-    """Embed the question and return the closest documents, best first.
-    where: optional metadata filter, e.g. {"mandate_id": 2}."""
+def search(question: str, top_k: int = config.SEARCH_TOP_K) -> list[dict]:
+    """Embed the question and return the closest documents, best first."""
     if collection.count() == 0:
         raise RuntimeError("Index is empty - call POST /knowledge/index first")
 
     query_vectors, _ = embed_texts([question], input_type="query")
-    result = collection.query(query_embeddings=query_vectors, n_results=top_k, where=where)
+    result = collection.query(query_embeddings=query_vectors, n_results=top_k)
 
     ids = result["ids"][0]
     metadatas = (result["metadatas"] or [[]])[0]
@@ -95,7 +90,7 @@ def search(question: str, top_k: int = config.SEARCH_TOP_K, where: Where | None 
         {
             "id": doc_id,
             "title": meta["title"],
-            "document_type": meta["document_type"],
+            "type": meta["type"],
             "date": meta["date"],
             "text": text,
             # Chroma returns distance (lower = closer); 1 - distance gives similarity (higher = closer)

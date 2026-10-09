@@ -1,7 +1,6 @@
 import anthropic
-from fastapi.testclient import TestClient
-
 import llm
+from fastapi.testclient import TestClient
 from main import app
 
 client = TestClient(app)
@@ -23,7 +22,7 @@ def test_summary_text_and_usage(monkeypatch):
 
 def test_provider_timeout_becomes_504(monkeypatch):
     def boom(firm):
-        raise anthropic.APITimeoutError(request=None)
+        raise anthropic.APITimeoutError(request=None) # type: ignore
     monkeypatch.setattr(llm, "summarise_firm", boom)
     response = client.post("/firms/1/summary")
     assert response.status_code == 504
@@ -40,7 +39,7 @@ def test_estimate_not_call_model(monkeypatch):
     
 def test_stream_yield_chunks(monkeypatch):
     monkeypatch.setattr(llm, "stream_firm_summary", 
-                        lambda firm: iter(["Hard", "ing", "& Voss"]))
+                        lambda firm: iter(["Hard", "ing", " & Voss"]))
     with client.stream("GET", "/firms/1/summary/stream") as response:
         assert response.status_code == 200
         body = "".join(response.iter_text())

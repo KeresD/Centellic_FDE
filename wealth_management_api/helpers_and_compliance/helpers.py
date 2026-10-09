@@ -15,9 +15,9 @@ def next_id(records: list[dict[str, Any]], key: str) -> int:
     return max((r[key] for r in records), default=0) + 1
 
 
-def remove_where(records: list[dict[str, Any]], key: str, value: Any) -> None:
+'''def remove_where(records: list[dict[str, Any]], key: str, value: Any) -> None:
     """Remove matching rows in place, so every module importing this list sees the change."""
-    records[:] = [r for r in records if r[key] != value]
+    records[:] = [r for r in records if r[key] != value]'''
     
 def today() -> date:
     """Today's date in the firm's timezone, so 'stale' means the same thing on any server."""
