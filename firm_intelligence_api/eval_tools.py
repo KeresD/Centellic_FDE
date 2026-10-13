@@ -27,10 +27,10 @@ def _alternative_matches(answer: str, alternative:str) -> bool:
 # q14 (okonkwo Bell offices)         ["Lagos", "Nairobi"]     must mention both Lagos and Nairobi
 def keywords_present(answer: str | None, keywords: list[str]) -> bool:
     """True only for a non-refusal answer that contains every keyword group."""
-    if is_refusal(answer):
+    if answer is None or is_refusal(answer):
         return False
     return all(
-        any(_alternative_matches(answer, alt)) for alt in group.split("|")
+        any(_alternative_matches(answer, alt) for alt in group.split("|"))
             for group in keywords
     )
     
@@ -38,4 +38,4 @@ def keywords_present(answer: str | None, keywords: list[str]) -> bool:
 # Answers for above def in terms of True/False because docstring set to bool
 # Offices in lagos and nairobi - True
 # An office in Lagos - False
-# An office in Nairobi - False
+# An office in Nairobi - False 

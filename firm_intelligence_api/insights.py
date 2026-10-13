@@ -15,7 +15,7 @@ router = APIRouter(prefix="/firms", tags=["insights"])
 @router.post("/{firm_id}/summary")
 def get_firm_summary(firm: dict = Depends(get_firm_or_404)):
     try:
-        return llm.summarise_firm(firm)
+        return llm.summarise_firm(firm) # type: ignore
     except APITimeoutError:
         raise HTTPException(status_code=504, detail="Summary provider timed out")
     except RateLimitError:
@@ -34,7 +34,7 @@ def estimate(firm: dict = Depends(get_firm_or_404)):
     try:
         return {
             "id": firm["id"],
-            "est_input_tokens": llm.est_input_tokens(firm),
+            "est_input_tokens": llm.est_input_tokens(firm), # type: ignore
             "model": llm.MODEL,
         }
     except APITimeoutError:
@@ -47,7 +47,7 @@ def estimate(firm: dict = Depends(get_firm_or_404)):
 @router.get("/{firm_id}/summary/stream")
 def stream_summary(firm: dict = Depends(get_firm_or_404)):
     return StreamingResponse(
-        llm.stream_firm_summary(firm),
+        llm.stream_firm_summary(firm), # type: ignore
         media_type="text/plain",
     )
     
@@ -57,7 +57,7 @@ def stream_summary(firm: dict = Depends(get_firm_or_404)):
 @router.post("/{firm_id}/analysis")
 def analyse_firm_endpoint(firm: dict = Depends(get_firm_or_404)):
     try:
-        return llm.analyse_firm(firm)
+        return llm.analyse_firm(firm) # type: ignore
     except APITimeoutError:
         raise HTTPException(status_code=504, detail="Analysis provider timed out")
     except RateLimitError:
