@@ -7,6 +7,7 @@ import grounding
 # import knowledge
 import knowledge_store as knowledge
 import llm
+import hybrid
 
 # our relevance floor
 # Below this we treat the retrieved context as not actually relevant
@@ -53,7 +54,7 @@ def ask(q : Question):
     
     # 2. Filter, and decide whether to make a call to the model at all.
     # compare against our RELEVANCE_FLOOR
-    usable = [hit for hit in hits if hit["score"] >= RELEVANCE_FLOOR]
+    usable = [hit for hit in hits if hybrid.is_usable(hit, RELEVANCE_FLOOR)]
     
     if not usable:
         return {

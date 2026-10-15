@@ -124,3 +124,29 @@ def search_with_vectors(strategy: str, query_vectors: list[list[float]], k: int)
         ]
         for ids, docs, metas, dists in zip(result["ids"], result["documents"], result["metadatas"], result["distances"]) # type: ignore
     ]
+    
+
+""" A chunk that only keyword search found has no cosine score - our relevance gate needs cosine score"""
+
+def cosine_for(strategy: str, query_vector: list[float], chunk_ids: list[str]) -> dict[str, float]:
+    if not chunk_ids:
+        return {}
+    
+    stored = collection_for(strategy).get(ids=chunk_ids, include=["embeddings"])
+    
+    return{
+        chunk_id: float(knowledge.cosine_similarity(query_vector, list(vector)))
+        for chunk_id, vector in zip(stored["ids"], stored["embeddings"]) # type: ignore
+    }
+    
+
+# where it fits in hybrid.py
+    # vector search returns its top 10 with cosine
+    # keyword search returns its top 10
+    # RRF merges them
+    # any chunk in the keyword list but NOT in the vector list = passed to "cosine_for"
+    #now every hits has a cosine - so the relevance gate works the same on all of them
+        # score >= 0.45 or exact_match
+        
+# questiion mentions 3307
+# chunk mentions 3307

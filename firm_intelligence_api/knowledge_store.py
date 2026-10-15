@@ -3,9 +3,12 @@
 
 import knowledge
 import chunk_index
+import hybrid
 
 # our chosen strategy
-CHUNK_STRATEGY = "seelctions_contextual"
+CHUNK_STRATEGY = "sections_contextual"
+
+SEARCH_MODE = "hybrid"
     
 def count() -> int:
     return chunk_index.collection_for(CHUNK_STRATEGY).count()
@@ -19,6 +22,6 @@ def build_index() -> int:
 def search(question: str, top_k: int = 3) -> list[dict]:
     '''Embed the question and let Chroma do the storing.'''
     query_vectors, _ = knowledge.embed_texts([question], input_type="query")
-    query_vectors, _ = knowledge.embed_texts([question], input_type="query")
-    
+    if SEARCH_MODE == "hybrid":
+        return hybrid.search_with_vector(CHUNK_STRATEGY, question, query_vectors[0], top_k)
     return chunk_index.search_with_vectors(CHUNK_STRATEGY, query_vectors, k=top_k)[0]
